@@ -22,6 +22,7 @@ const uploadOnClodinary = async (localFilePath) => {
     catch (error) {
         fs.unlinkSync(localFilePath); // remove the locallay saved temmpory file as the upload opertaion failed
         console.log(error);
+        return null;
     }
 }
 
