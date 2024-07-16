@@ -18,7 +18,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
 
     // get details from frontend
     const { fullName, userName, email, password } = req.body;
-    console.log(userName, email, password, "user details");
+    // console.log(userName, email, password, "user details");
 
     //validation - not empty
 
@@ -28,24 +28,30 @@ const registerUser = asyncHandler(async (req, res, next) => {
 
     //check if user already exists  : userName , email
 
-    const existedUser = User.findOne({ $or: [{ email }, { userName }] });
+    const existedUser = await User.findOne({ $or: [{ email }, { userName }] });
     if (existedUser) {
         throw new ApiError(409, "User with email or username already exists")
     }
 
     // check for images , check for avatar and cover image
     const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    // const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    let coverImageLocalPath;
+    if(req.files &&  Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0 ){
+        coverImageLocalPath = req.files.coverImage[0].path;
+    }
+
     console.log(req.files, "files from multer");
     if (!avatarLocalPath) {
-        throw new ApiError(400, "Avatar image are required");
+        throw new ApiError(400, "Avatar image local is required");
     }
 
     // upload to cloudinary and get the url
     const avatar = await uploadOnClodinary(avatarLocalPath);
     const coverImage = await uploadOnClodinary(coverImageLocalPath);
+     
     if(!avatar){
-        throw new ApiError(400, "Avatar image are required");
+        throw new ApiError(400, "Avatar image is required");
     }
 
     // now create the  user object - create entry in db
