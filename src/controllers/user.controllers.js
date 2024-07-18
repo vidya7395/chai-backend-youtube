@@ -3,7 +3,7 @@ import { User } from "../models/user.model.js";
 import { uploadOnClodinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/Apierror.js";
-import jwt, { verify } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 const generateAccessAndRefereshTokens = async (userId) => {
     try {
@@ -54,7 +54,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
     // check for images , check for avatar and cover image
     let avatarLocalPath
     if (req.files && Array.isArray(req.files.avatar) && req.files.avatar.length > 0) {
-        avatarLocalPath = req.files.coverImage[0].path;
+        avatarLocalPath = await req.files.avatar[0].path;
     }
     else {
         throw new ApiError(400, "Avatar image local is required");
@@ -164,7 +164,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         throw new ApiError(401, "unauthorized request")
     }
     try {
-        const decodedToken = jwt.verify(incomingRefreshToken, REFRESH_TOKEN_SECRET);
+        const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
         if (!verifyJWT) {
             throw new ApiError(401, "unauthorized request")
         }
