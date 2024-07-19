@@ -28,8 +28,20 @@ const uploadOnClodinary = async (localFilePath) => {
     }
 }
 
-
-export {uploadOnClodinary};
+const deleteCloudinaryImage = async (imageUrl)=>{
+    try {
+        if(!imageUrl) return null
+        return  response = await cloudinary.uploader.destroy(imageUrl,{
+        resource_type: "auto"
+       })
+       
+    } catch (error) {
+        console.log(error);
+        return null;
+        
+    }
+}
+export {uploadOnClodinary,deleteCloudinaryImage};
 // import { v2 as cloudinary } from 'cloudinary';
 
 // (async function() {
